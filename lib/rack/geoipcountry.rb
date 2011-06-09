@@ -13,7 +13,7 @@ module Rack
     end
 
     def call(env)
-      address = @options[:method] ? Request.new(env)[@options[:field]] : env[:field]
+      address = @options[:method] ? Request.new(env)[@options[:field]] : env[@options[:field]]
 
       res = @db.country(address)
       if !res.nil?
