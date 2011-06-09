@@ -62,6 +62,8 @@ module Rack
         env['X_GEOIP_CITY'] = res['city_name']
         env['X_GEOIP_POSTAL_CODE'] = res['postal_code']
       else
+        # prevent request header injection
+        env.reject! { |key, value| key =~ /^X_GEOIP_/ }
         env['X_GEOIP_MATCHED'] = 0
       end
 
