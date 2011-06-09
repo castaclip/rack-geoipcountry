@@ -6,7 +6,10 @@ module Rack
   # http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
   #
   # Usage:
-  # use Rack::GeoIPCountry, :db => "path/to/GeoIP.dat"
+  # use Rack::GeoIPCountry, :file => "GeoIP.dat"
+  #
+  # Other options:
+  #   * data_file_path: path to the data file (defaults to "/usr/local/share/GeoIP/")
   #
   # By default all requests are looked up and the X_GEOIP_* headers are added to the request
   # The headers can then be read in the application
@@ -28,8 +31,10 @@ module Rack
   # MIT License - Karol Hosiawa ( http://twitter.com/hosiawak )
   class GeoIPCountry
     def initialize(app, options = {})
-      options[:db] ||= 'GeoIP.dat'
-      @db = GeoIP.new(options[:db])
+      options[:file] ||= 'GeoIP.dat'
+      options[:data_file_path] ||= "/usr/local/share/GeoIP/"
+      data_file = ::File.join(options[:data_file_path], options[:file])
+      @db = GeoIP.new(data_file)
       @app = app
     end
 

@@ -7,7 +7,7 @@ The database can be downloaded from:
 Usage
 =====
 
-    use Rack::GeoIPCountry, :db => "path/to/GeoIP.dat"
+    use Rack::GeoIPCountry, :file => "path/to/GeoIP.dat"
 
 By default all requests are looked up and the X_GEOIP_* headers are added to the request
 The headers can then be read in the application. The country name is added to the 
