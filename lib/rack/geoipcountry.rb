@@ -48,10 +48,15 @@ module Rack
       address = @options[:method] ? Request.new(env)[@options[:field]] : env[:field]
 
       res = @db.country(address)
+      if !res.nil?
+        env['X_GEOIP_MATCHED'] = 1
         env['X_GEOIP_COUNTRY_CODE'] = res['country_code2']
         env['X_GEOIP_COUNTRY_CODE3'] = res['country_code3']
         env['X_GEOIP_COUNTRY'] = res['country_name']
         env['X_GEOIP_CONTINENT'] = res['continent_code']
+      else
+        env['X_GEOIP_MATCHED'] = 0
+      end
 
       @app.call(env)
     end
