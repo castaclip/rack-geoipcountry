@@ -1,5 +1,5 @@
 module Rack
-  module GeoIPCountry
+  class GeoIPCountry
     VERSION = "1.0.0"
   end
 end
