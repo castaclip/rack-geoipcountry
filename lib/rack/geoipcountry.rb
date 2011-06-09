@@ -4,12 +4,10 @@ module Rack
 
   class GeoIPCountry
     def initialize(app, options = {})
-      options[:file] ||= 'GeoIP.dat'
-      options[:data_file_path] ||= "/usr/local/share/GeoIP/"
-      data_file = ::File.join(options[:data_file_path], options[:file])
+      options[:data_file] ||= "/usr/local/share/GeoIP/GeoCity.dat"
       options[:method] ||= false
       options[:field] ||= 'REMOTE_ADDR'
-      @db = GeoIP.new(data_file)
+      @db = GeoIP.new(options[:data_file])
       @options = options
       @app = app
     end
