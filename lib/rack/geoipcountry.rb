@@ -10,6 +10,9 @@ module Rack
   #
   # Other options:
   #   * data_file_path: path to the data file (defaults to "/usr/local/share/GeoIP/")
+  #   * method: can be "GET" or "POST" and will get the IP address to use from the request
+  #     (defaults to false which means that the IP address will be fetched from REMOTE_ADDR header field)
+  #   * field: field name where the IP address is to be found (works in concert with the method option)
   #
   # By default all requests are looked up and the X_GEOIP_* headers are added to the request
   # The headers can then be read in the application
@@ -34,17 +37,22 @@ module Rack
       options[:file] ||= 'GeoIP.dat'
       options[:data_file_path] ||= "/usr/local/share/GeoIP/"
       data_file = ::File.join(options[:data_file_path], options[:file])
+      options[:method] ||= false
+      options[:field] ||= 'REMOTE_ADDR'
       @db = GeoIP.new(data_file)
+      @options = options
       @app = app
     end
 
     def call(env)
-      res = @db.country(env['REMOTE_ADDR'])
-      env['X_GEOIP_COUNTRY_ID'] = res[2]
-      env['X_GEOIP_COUNTRY_CODE'] = res[3]
-      env['X_GEOIP_COUNTRY_CODE3'] = res[4]
-      env['X_GEOIP_COUNTRY'] = res[5]
-      env['X_GEOIP_CONTINENT'] = res[6]
+      address = @options[:method] ? Request.new(env)[@options[:field]] : env[:field]
+
+      res = @db.country(address)
+        env['X_GEOIP_COUNTRY_CODE'] = res['country_code2']
+        env['X_GEOIP_COUNTRY_CODE3'] = res['country_code3']
+        env['X_GEOIP_COUNTRY'] = res['country_name']
+        env['X_GEOIP_CONTINENT'] = res['continent_code']
+
       @app.call(env)
     end
 
