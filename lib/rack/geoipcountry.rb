@@ -6,7 +6,7 @@ module Rack
     def initialize(app, options = {})
       default_options = {
         :data_file  => "/usr/local/share/GeoIP/GeoCity.dat",
-        :field      => nil,
+        :param_name => nil,
         :geo_header => true
       }
       @options = default_options.merge(options)
@@ -15,7 +15,7 @@ module Rack
     end
 
     def call(env)
-      address = @options[:field] ? Request.new(env)[@options[:field]] : env['REMOTE_ADDR']
+      address = @options[:param_name] ? Request.new(env)[@options[:param_name]] : env['REMOTE_ADDR']
 
       res = @db.country(address)
       if !res.nil?

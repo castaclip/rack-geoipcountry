@@ -47,7 +47,7 @@ context "Geo location lookup" do
   end
 
   context "with custom ip field" do
-    app { geoip_app({:field => "my_custom_ip"}) }
+    app { geoip_app({:param_name => "my_custom_ip"}) }
 
     setup do
       get("/", {'my_custom_ip' => "8.8.8.8"})
@@ -58,7 +58,7 @@ context "Geo location lookup" do
   end
 
   context "with custom ip field" do
-    app { geoip_app({:field => "my_custom_ip"}) }
+    app { geoip_app({:param_name => "my_custom_ip"}) }
 
     setup do
       get("/", {'my_custom_ip' => "0.0.0.0"})
