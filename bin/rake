@@ -13,8 +13,4 @@ ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile",
 require 'rubygems'
 require 'bundler/setup'
 
-<<<<<<< HEAD
 load Gem.bin_path('rack-geoipcountry', 'rake')
-=======
-load Gem.bin_path('rake', 'rake')
->>>>>>> fef4da1ae9f749aec00e5280716a724a14a75295
