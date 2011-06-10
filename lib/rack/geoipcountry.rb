@@ -17,7 +17,7 @@ module Rack
 
       res = @db.country(address)
       if !res.nil?
-        env['X_GEOIP_MATCHED'] = 1
+        env['X_GEOIP_MATCHED'] = '1'
         env['X_GEOIP_COUNTRY_CODE'] = res['country_code2']
         env['X_GEOIP_COUNTRY_CODE3'] = res['country_code3']
         env['X_GEOIP_COUNTRY'] = res['country_name']
@@ -28,7 +28,7 @@ module Rack
       else
         # prevent request header injection
         env.reject! { |key, value| key =~ /^X_GEOIP_/ }
-        env['X_GEOIP_MATCHED'] = 0
+        env['X_GEOIP_MATCHED'] = '0'
       end
 
       @app.call(env)
