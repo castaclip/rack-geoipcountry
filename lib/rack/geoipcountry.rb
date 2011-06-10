@@ -31,6 +31,8 @@ module Rack
         env['X_GEOIP_MATCHED'] = '0'
       end
 
+      env['X_GEOIP_MATCHING_ADDRESS'] = address
+
       @app.call(env)
     end
 
