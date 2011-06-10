@@ -1,5 +1,6 @@
 require 'rack'
 require 'rack/test'
+require 'rack/geoipcountry'
 
 class Riot::Situation
   include Rack::Test::Methods
@@ -10,10 +11,14 @@ end
 
 
 class Riot::Context
-  def app
+  def geoip_app(config)
     Rack::Builder.new {
       use Rack::CommonLogger
-      use Rack::GeoIPCountry, :data_file => "/usr/local/share/GeoIP/GeoLiteCity.dat", :method => "GET", :field => "client_ip"
+      use Rack::GeoIPCountry config
+
+      map "/" do
+        run -> env { [200, { "Content-Length" => "4" }, ['Ohai']] }
+      end
     }.to_app
   end
 
@@ -29,6 +34,8 @@ class Riot::Context
 end
 
 context "Geo location lookup" do
+  geoip_app({:data_file => "/me/no/existy"})
+
   setup do
     get("/", { "client_ip" => "8.8.8.8" })
     last_response
