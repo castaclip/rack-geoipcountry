@@ -12,4 +12,8 @@ require 'simplecov'
 SimpleCov.start
 
 Bundler.require(:default, :test)
+<<<<<<< HEAD
 require 'riot/rr'
+=======
+require 'riot/rr'
+>>>>>>> fef4da1ae9f749aec00e5280716a724a14a75295

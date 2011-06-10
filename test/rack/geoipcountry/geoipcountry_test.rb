@@ -26,20 +26,6 @@ class Riot::Situation
   end
 end
 
-# context "Geo location lookup" do
-#   app do
-#     geoip_app({ :data_file => "/usr/local/share/GeoIP/GeoLiteCity.dat", :method => "GET", :field => "client_ip" })
-#   end
-# 
-#   setup do
-#     get("/", {'client_ip' => "8.8.8.8"})
-#     last_request
-#   end
-#   hookup { pp topic }
-#   asserts(:status).equals(200)
-#   asserts(:body).equals("Ohai")
-# end
-
 context "Geo location lookup" do
   context "with default settings" do
     app { geoip_app() }
