@@ -46,26 +46,41 @@ context "Geo location lookup" do
     asserts("correct postal code")    { topic["X_GEOIP_POSTAL_CODE"] }.equals("94043")
   end
 
-  context "with custom ip field" do
-    app { geoip_app({:param_name => "my_custom_ip"}) }
+  context "with custom ip field in header" do
+    app { geoip_app({:header_field => "my_custom_ip"}) }
 
     setup do
-      get("/", {'my_custom_ip' => "8.8.8.8"})
+      get("/", {}, {'my_custom_ip' => "8.8.8.8", 'REMOTE_ADDR' => "10.0.0.1"})
       last_request.env
     end
 
     asserts("matches existing IP"){topic["X_GEOIP_MATCHED"]}.equals("1")
+    asserts("matches existing IP"){topic["X_GEOIP_MATCHING_ADDRESS"]}.equals("8.8.8.8")
   end
 
-  context "with custom ip field" do
+
+  context "with custom GET parameter" do
     app { geoip_app({:param_name => "my_custom_ip"}) }
 
     setup do
-      get("/", {'my_custom_ip' => "0.0.0.0"})
+      get("/", {'my_custom_ip' => "8.8.8.8"}, {'REMOTE_ADDR' => "10.0.0.1"})
       last_request.env
     end
 
-    asserts("non existing IP"){topic["X_GEOIP_MATCHED"]}.equals("0")
+    asserts("matches existing IP"){topic["X_GEOIP_MATCHED"]}.equals("1")
+    asserts("matches existing IP"){topic["X_GEOIP_MATCHING_ADDRESS"]}.equals("8.8.8.8")
+  end
+
+  context "with custom POST parameter" do
+    app { geoip_app({:param_name => "my_custom_ip"}) }
+
+    setup do
+      post("/", {'my_custom_ip' => "8.8.8.8"}, {'REMOTE_ADDR' => "10.0.0.1"})
+      last_request.env
+    end
+
+    asserts("matches existing IP"){topic["X_GEOIP_MATCHED"]}.equals("1")
+    asserts("matches existing IP"){topic["X_GEOIP_MATCHING_ADDRESS"]}.equals("8.8.8.8")
   end
 end
 
