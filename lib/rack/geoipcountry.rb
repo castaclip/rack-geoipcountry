@@ -18,13 +18,10 @@ module Rack
 
     def call(env)
       if @options[:param_name]
-        pp "param"
         address = Request.new(env)[@options[:param_name]]
       elsif @options[:header_field]
-        pp "head"
         address = env[@options[:header_field]]
       else
-        pp "default"
         address = env['REMOTE_ADDR']
       end
 
