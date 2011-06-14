@@ -18,10 +18,13 @@ module Rack
 
     def call(env)
       if @options[:param_name]
+        pp "param"
         address = Request.new(env)[@options[:param_name]]
       elsif @options[:header_field]
+        pp "head"
         address = env[@options[:header_field]]
       else
+        pp "default"
         address = env['REMOTE_ADDR']
       end
 
@@ -35,6 +38,7 @@ module Rack
         env['X_GEOIP_REGION']        = res['region_name']
         env['X_GEOIP_CITY']          = res['city_name']
         env['X_GEOIP_POSTAL_CODE']   = res['postal_code']
+      env['X_GEOIP_MATCHING_ADDRESS'] = address
 
         if @options[:geo_header] == true
           env['Geo-Location']        = "#{res['latitude']};#{res['longitude']}"
@@ -46,7 +50,6 @@ module Rack
         env['X_GEOIP_MATCHED'] = '0'
       end
 
-      env['X_GEOIP_MATCHING_ADDRESS'] = address
 
       @app.call(env)
     end

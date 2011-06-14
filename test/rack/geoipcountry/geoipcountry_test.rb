@@ -58,6 +58,18 @@ context "Geo location lookup" do
     asserts("matches existing IP"){topic["X_GEOIP_MATCHING_ADDRESS"]}.equals("8.8.8.8")
   end
 
+  context "all other fields are removed if X_GEOIP_MATCHED is 0" do
+    app { geoip_app() }
+
+    setup do
+      get("/", {}, {'REMOTE_ADDR' => "192.168.0.255"})
+      last_request.env
+    end
+
+    asserts("does not match"){topic["X_GEOIP_MATCHED"]}.equals("0")
+    asserts("ip header field removed"){topic["X_GEOIP_MATCHING_ADDRESS"].nil?}
+    asserts("country header field removed"){topic["X_GEOIP_COUNTRY_CODE"].nil?}
+  end
 
   context "with custom GET parameter" do
     app { geoip_app({:param_name => "my_custom_ip"}) }
@@ -90,13 +102,14 @@ context "HTTP header injection" do
     app { geoip_app() }
 
     setup do
-      get("/", {}, {'X_GEOIP_MATCHED' => "1", 'X_GEOIP_COUNTRY_CODE' => "FTW", 'X_GEOIP_MATCHING_ADDRESS' => "133.7.133.7", 'REMOTE_ADDR' => "10.0.0.1"})
+      get("/", {}, {'X_GEOIP_POSTAL_CODE' => "1337", 'X_GEOIP_COUNTRY_CODE' => "FTW", 'X_GEOIP_MATCHING_ADDRESS' => "133.7.133.7", 'REMOTE_ADDR' => "8.8.8.8"})
       last_request.env
     end
 
-    asserts("match field") { topic["X_GEOIP_MATCHED"] }.equals("0")
-    asserts("IP in header is corrected") { topic["X_GEOIP_MATCHING_ADDRESS"] }.equals("10.0.0.1")
-    asserts("country code") { topic["X_GEOIP_COUNTRY_CODE"] }.nil
+    asserts("match field") { topic["X_GEOIP_MATCHED"] }.equals("1")
+    asserts("IP in header is corrected") { topic["X_GEOIP_MATCHING_ADDRESS"] }.equals("8.8.8.8")
+    asserts("country code") { topic["X_GEOIP_COUNTRY_CODE"] }.equals("US")
+    asserts("zip code") { topic["X_GEOIP_POSTAL_CODE"] }.equals("94043")
   end
 end
 
