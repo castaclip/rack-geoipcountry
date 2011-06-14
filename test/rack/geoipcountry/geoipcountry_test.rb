@@ -1,6 +1,6 @@
 require 'rack'
 require 'rack/test'
-require 'rack/geoipcountry'
+require 'rack/geoip'
 require 'pp'
 
 class Riot::Context
@@ -8,10 +8,20 @@ class Riot::Context
     setup { @app = (app || block.call) }
   end
 
+  def geoip_mapping(options = {})
+    Rack::Builder.new {
+      use Rack::CommonLogger
+      use Rack::GeoIP::Mapping, options
+      map "/" do
+        run -> env { [200, { "Content-Length" => "4" }, ["Yay."]] }
+      end
+    }.to_app
+  end
+
   def geoip_app(options = {})
     Rack::Builder.new {
       use Rack::CommonLogger
-      use Rack::GeoIPCountry, options
+      use Rack::GeoIP::Matching, options
       map "/" do
         run -> env { [200, { "Content-Length" => "4" }, ["Yay."]] }
       end
@@ -137,5 +147,25 @@ context "can be removed at will" do
 
     asserts("Geo-Country") { topic["Geo-Country"] }.nil
     asserts("Geo-Location") { topic["Geo-Location"] }.nil
+  end
+end
+
+context "custom mapping prefix" do
+  context "is added by default" do
+    app { geoip_mapping(:prefix => '/findme') }
+
+    setup do
+      get("/findme")
+      last_request.env
+    end
+
+    asserts("matches"){topic["X_GEOIP_MATCHED"]}.equals("1")
+
+    setup do
+      get("/dontfindme")
+      last_request.env
+    end
+
+    asserts("does not match"){topic["X_GEOIP_MATCHED"]}.nil?
   end
 end

@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "rack/geoipcountry/version"
+require "rack/geoip/version"
 
 Gem::Specification.new do |s|
   s.name        = "rack-geoipcountry"
-  s.version     = Rack::GeoIPCountry::VERSION
+  s.version     = Rack::GeoIP::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Karol Hosiawa", "Thomas Maurer"]
   s.email       = ["tma@freshbit.ch"]
